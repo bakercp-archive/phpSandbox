@@ -1,9 +1,26 @@
 <?php
 
-	// some demo code to get the current Twitter trending topics
+	// Demo code to get the current Twitter trending topics
 	// and carry out a google image search on each of the trending topics
-	// Christopher Baker <http://christopherbaker.net>
-	// 
+	//
+	// Copyright (c) 2011, 2012 Christopher Baker <http://christopherbaker.net> 
+	//
+	// Permission is hereby granted, free of charge, to any person obtaining a copy of 
+	// this software and associated documentation files (the "Software"), to deal in 
+	// the Software without restriction, including without limitation the rights to use, 
+	// copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the 
+	// Software, and to permit persons to whom the Software is furnished to do so, 
+	// subject to the following conditions:
+	//
+	// The above copyright notice and this permission notice shall be included in all 
+	// copies or substantial portions of the Software.
+	//
+	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+	// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+	// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+	// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+	// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+	// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 	$icon = false;
 	
@@ -48,6 +65,8 @@
 
 	echo $out; // send it to the screen in one burst
 
+
+//=====================================================
 	
 	// our function
 	function getTwitterTrendingTopics($woeid) {
@@ -58,11 +77,11 @@
 		$site_url = 'https://api.twitter.com/1/trends/'. $woeid . '.json';
 		$ch = curl_init();
 		$timeout = 5; // set to zero for no timeout
-		curl_setopt ($ch, CURLOPT_URL, $site_url);
-		curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+		curl_setopt($ch, CURLOPT_URL, $site_url);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 		curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
 		
-		// this ob_start/ob_end_clean() stuff is better for shared web hosts
+		// this ob_start/ob_end_clean() stuff is more reliable for shared web hosts
 		ob_start();
 		curl_exec($ch);
 		curl_close($ch);
@@ -78,11 +97,9 @@
 		$trend_data['trends']     = $json[0]['trends'];
 		
 		return $trend_data;
-	
 	}
 
 	function getGoogleImageSearchResults($query, $icon) {
-
 		// this may be against the google TOS.
 		// it is a straight web scrape.
 		// for "demo" purposes only.
