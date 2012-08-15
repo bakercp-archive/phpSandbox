@@ -23,9 +23,11 @@
 	// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 	$icon = false;
+	$thumbs = false;
 	
 	if(isset($_GET['icon'])) $icon = true;
-	
+	if(isset($_GET['thumbs'])) $thumbs = true;
+
 
 	// $out is what we will eventually echo to the screen
 	$out = '<html><body>'; // bare bones
@@ -47,7 +49,7 @@
 		// do you want to remove the hashtags?
 		
 		// do the google image search with our function 
-		$urls = getGoogleImageSearchResults($trend, $icon);
+		$urls = getGoogleImageSearchResults($trend, $icon, $thumbs);
 		
 		$out .= "<strong>" . $trend . "</strong><br/>";
 	    // drop an <img> tag for each url
@@ -99,7 +101,7 @@
 		return $trend_data;
 	}
 
-	function getGoogleImageSearchResults($query, $icon) {
+	function getGoogleImageSearchResults($query, $icon, $thumbs) {
 		// this may be against the google TOS.
 		// it is a straight web scrape.
 		// for "demo" purposes only.
@@ -132,25 +134,37 @@
 		
 		// grab all the anchors the page
 		$xpath = new DOMXPath($dom);
-		$hrefs = $xpath->evaluate("/html/body//a");
+		
+		$hrefs = $thumbs ? $xpath->evaluate("/html/body//img") : $xpath->evaluate("/html/body//a");
 		
 		$urls = array(); // this is the array we will fill and return
 		
 		for ($i = 0; $i < $hrefs->length; $i++) {
 			$href = $hrefs->item($i);
-			$url = $href->getAttribute('href');
-			$pos = strrpos($url, '/imgres');
-			if(strrpos($url,'/imgres') === 0) {
-			$start = 15;
-			$end = strrpos($url,'&imgrefurl=');
-		
-			// the image url
-			$img_url = substr($url,$start,$end - $start);		
-			array_push($urls,$img_url);
-			}	
-		}
-		
-		return $urls;
+			
+			if($thumbs) {
+				$url = $href->getAttribute('src');
+				if(strpos($url, '?q=tbn:') > 0) {
+					array_push($urls,$url);
+				} else {
+					// skip
+				}
+			} else {
+				$url = $href->getAttribute('href');
+				$pos = strrpos($url, '/imgres');
+				if(strrpos($url,'/imgres') === 0) {
+				$start = 15;
+				$end = strrpos($url,'&imgrefurl=');
+			
+				// the image url
+				$img_url = substr($url,$start,$end - $start);		
+				array_push($urls,$img_url);
+			}
+			
+		}	
 	}
+	
+	return $urls;
+}
 
 ?>
